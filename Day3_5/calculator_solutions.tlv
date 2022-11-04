@@ -16,10 +16,12 @@
          // YOUR CODE HERE
       @1   // ...
          $valid = $reset ? 0 : >>1$valid + 1;
-         $valid_or_reset = $valid || $reset;
-         $in1[31:0] = >>2$out[31:0];
-         $in2[31:0] = $rand2[3:0];
-         $op[1:0] = $rand3[1:0];
+         $valid_or_reset = $valid || $reset;  
+         ?$valid 
+      
+            $in1[31:0] = >>2$out[31:0];
+            $in2[31:0] = $rand2[3:0];
+            $op[1:0] = $rand3[1:0];
          
       @2   
          $out[31:0] = $valid_or_reset ? ($op[1] ? ($op[0] ? $in1[31:0] / $in2[31:0] : $in1[31:0] * $in2[31:0]) : ($op[0] ? $in1[31:0] - $in2[31:0] : $in1[31:0] + $in2[31:0])) : >>1$out[31:0] ; 
