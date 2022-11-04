@@ -12,7 +12,7 @@
       @1
          $reset = *reset;
          
-         //CYCLED + valid CALCULATOR
+         //CYCLED + valid + memory CALCULATOR
          // YOUR CODE HERE
          // ...
          $valid = $reset ? 0 : >>1$valid + 1;
