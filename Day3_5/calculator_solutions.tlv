@@ -12,12 +12,12 @@
       @0
          $reset = *reset;
          
-         //COMBINATIONAL CALCULATOR
+         //SEQUENTIAL CALCULATOR
          // YOUR CODE HERE
          // ...
-         $in1[31:0] = $rand1[3:0];
+         $in1[31:0] = >>1$out[31:0];
          $in2[31:0] = $rand2[3:0];
-         $out[31:0] = $op[1] ? ($op[0] ? $in1[31:0] / $in2[31:0] : $in1[31:0] * $in2[31:0]) : ($op[0] ? $in1[31:0] - $in2[31:0] : $in1[31:0] + $in2[31:0]) ; 
+         $out[31:0] = $reset ? 0 : ($op[1] ? ($op[0] ? $in1[31:0] / $in2[31:0] : $in1[31:0] * $in2[31:0]) : ($op[0] ? $in1[31:0] - $in2[31:0] : $in1[31:0] + $in2[31:0])) ; 
 
 
       // Macro instantiations for calculator visualization(disabled by default).
