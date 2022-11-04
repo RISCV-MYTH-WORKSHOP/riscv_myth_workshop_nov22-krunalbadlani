@@ -21,15 +21,18 @@
          @1
             $in1[31:0] = >>2$out[31:0];
             $in2[31:0] = $rand2[3:0];
-            $op[1:0] = $rand3[1:0];
+            $op[2:0] = $rand3[2:0];
          
-      @2   
-         $out[31:0] = $reset ? 32'd0 :  ($op[1:0] == 2'b11) ? $in1[31:0] / $in2[31:0] : 
-                                        ($op[1:0] == 2'b10) ? $in1[31:0] * $in2[31:0] : 
-                                        ($op[1:0] == 2'b01) ? $in1[31:0] - $in2[31:0] : 
+         @2   
+            $out[31:0] = $reset ? 32'd0 :  ($op[2:0] == 3'b100) ? >>2$mem[31:0] : 
+                                        ($op[2:0] == 2'b011) ? $in1[31:0] / $in2[31:0] : 
+                                        ($op[2:0] == 2'b010) ? $in1[31:0] * $in2[31:0] : 
+                                        ($op[2:0] == 2'b001) ? $in1[31:0] - $in2[31:0] : 
                                                               $in1[31:0] + $in2[31:0] ; 
                                                                         
-
+            $mem[31:0] = $reset ? 32'd0 : ($op[2:0] == 3'b101) ?  >>2$mem[31:0] :
+                                                                  >>2$out[31:0] ;
+                                       
 
       // Macro instantiations for calculator visualization(disabled by default).
       // Uncomment to enable visualisation, and also,
@@ -44,7 +47,7 @@
 
    
    // Assert these to end simulation (before Makerchip cycle limit).
-   *passed = *cyc_cnt > 40;
+   *passed = *cyc_cnt > 50;
    *failed = 1'b0;
    
 
