@@ -31,7 +31,8 @@
                                                               $in1[31:0] + $in2[31:0] ; 
                                                                         
             $mem[31:0] = $reset ? 32'd0 : ($op[2:0] == 3'b101) ?  >>2$mem[31:0] :
-                                                                  >>2$out[31:0] ;
+                                          ($op[2:0] == 3'b110) ?  >>2$out[31:0] :
+                                          0;
                                        
 
       // Macro instantiations for calculator visualization(disabled by default).
