@@ -9,22 +9,26 @@
 
 \TLV
    |calc
-      @0
+      @1
          $reset = *reset;
          
          //CYCLED + valid CALCULATOR
          // YOUR CODE HERE
-      @1   // ...
+         // ...
          $valid = $reset ? 0 : >>1$valid + 1;
          $valid_or_reset = $valid || $reset;  
-         ?$valid 
-      
+      ?$valid_or_reset 
+         @1
             $in1[31:0] = >>2$out[31:0];
             $in2[31:0] = $rand2[3:0];
             $op[1:0] = $rand3[1:0];
          
       @2   
-         $out[31:0] = $valid_or_reset ? ($op[1] ? ($op[0] ? $in1[31:0] / $in2[31:0] : $in1[31:0] * $in2[31:0]) : ($op[0] ? $in1[31:0] - $in2[31:0] : $in1[31:0] + $in2[31:0])) : >>1$out[31:0] ; 
+         $out[31:0] = $reset ? 32'd0 :  ($op[1:0] == 2'b11) ? $in1[31:0] / $in2[31:0] : 
+                                        ($op[1:0] == 2'b10) ? $in1[31:0] * $in2[31:0] : 
+                                        ($op[1:0] == 2'b01) ? $in1[31:0] - $in2[31:0] : 
+                                                              $in1[31:0] + $in2[31:0] ; 
+                                                                        
 
 
       // Macro instantiations for calculator visualization(disabled by default).
