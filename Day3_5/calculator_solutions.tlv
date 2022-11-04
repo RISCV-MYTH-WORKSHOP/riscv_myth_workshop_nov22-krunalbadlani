@@ -1,5 +1,5 @@
 \m4_TLV_version 1d: tl-x.org
-\SV
+\SV 
    // This code can be found in: https://github.com/stevehoover/RISC-V_MYTH_Workshop
    
    m4_include_lib(['https://raw.githubusercontent.com/stevehoover/RISC-V_MYTH_Workshop/ecba3769fff373ef6b8f66b3347e8940c859792d/tlv_lib/calculator_shell_lib.tlv'])
@@ -12,12 +12,12 @@
       @0
          $reset = *reset;
          
-         
+         //COMBINATIONAL CALCULATOR
          // YOUR CODE HERE
          // ...
-         $in1[31:0] = >>1$out[31:0];
+         $in1[31:0] = $rand1[3:0];
          $in2[31:0] = $rand2[3:0];
-         $out[31:0] = $reset ? 0 : ($op[1] ? ($op[0] ? $in1[31:0] / $in2[31:0] : $in1[31:0] * $in2[31:0]) : ($op[0] ? $in1[31:0] - $in2[31:0] : $in1[31:0] + $in2[31:0])) ; 
+         $out[31:0] = $op[1] ? ($op[0] ? $in1[31:0] / $in2[31:0] : $in1[31:0] * $in2[31:0]) : ($op[0] ? $in1[31:0] - $in2[31:0] : $in1[31:0] + $in2[31:0]) ; 
 
 
       // Macro instantiations for calculator visualization(disabled by default).
