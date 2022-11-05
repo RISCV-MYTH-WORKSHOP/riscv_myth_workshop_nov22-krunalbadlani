@@ -45,8 +45,11 @@
 
       // YOUR CODE HERE
       // ...
-         $pc[21:0] = >>1$reset ? 32'b0 : >>1$pc + 32'd4;
-         $imem_rd_en = !>>1$reset ? 1 : 0;
+         $pc[31:0] = (>>1$reset) ? 0 : 
+                     (>>1$taken_br) ? >>1$br_tgt_pc : >>1$pc + 32'd4; 
+                     
+                  
+         $imem_rd_en = !$reset;
          $imem_rd_addr[31:0] = $pc[M4_IMEM_INDEX_CNT+1:2];
          
       @1
@@ -55,8 +58,9 @@
          $is_i_instr = $instr[6:2] ==? 5'b0000x ||
                        $instr[6:2] ==? 5'b001x0 ||
                        $instr[6:2] == 5'b11001   ;
-         $is_r_instr = $instr[6:2] ==? 5'b01x1x ||
-                       $instr[6:2] ==? 5'bxx100  ;             
+         $is_r_instr = $instr[6:2] ==? 5'b01011 ||
+                       $instr[6:2] ==? 5'b10100 || 
+                       $instr[6:2] ==? 5'b0110x;
          $is_b_instr = $instr[6:2] == 5'b11000   ;
          $is_u_instr = $instr[6:2] == 5'b0x101   ; 
          $is_s_instr = $instr[6:2] == 5'b0100x   ;
@@ -69,9 +73,9 @@
                        $is_j_instr ? { {12{$instr[31]}} , $instr[19:12] , $instr[20] , $instr[30:21] , 1'b0} : 32'b0;
          //adding valid to other fields of instructions
          $rs2_valid = $is_r_instr || $is_s_instr || $is_b_instr;
-         $rs1_valid = $is_r_instr || $is_s_instr || $is_b_instr;
+         $rs1_valid = $is_r_instr || $is_s_instr || $is_b_instr || $is_i_instr;
          $rd_valid = $is_r_instr || $is_i_instr || $is_u_instr || $is_j_instr;
-         $funct3_valid = $is_r_instr || $is_s_instr || $is_b_instr;
+         $funct3_valid = $is_r_instr || $is_s_instr || $is_b_instr|| $is_i_instr;
          $funct7_valid = $is_r_instr;
          
          ?$rs2_valid
@@ -99,31 +103,50 @@
 
          `BOGUS_USE($is_beq $is_bne $is_blt $is_bge $is_bltu $is_bgeu $is_addi $is_add)
           // register file read
-         ?$rs1_valid
-            $rf_rd_en1 = $rs1_valid;
+          
+         
+         $rf_rd_en1 = $rs1_valid;
+         ?$rf_rd_en1
             $rf_rd_index1[4:0] = $rs1[4:0];
-         ?$rs2_valid
-            $rf_rd_en2 = $rs2_valid;
+         
+         $rf_rd_en2 = $rs2_valid;
+         ?$rf_rd_en2
             $rf_rd_index2[4:0] = $rs2[4:0];
          
          $src1_value[31:0] = $rf_rd_data1[31:0];
          $src2_value[31:0] = $rf_rd_data2[31:0];
+         
+          
+         
+         
+         
          // alu
          $result[31:0] = $is_addi ? $src1_value + $imm :
                          $is_add ? $src1_value + $src2_value : 32'bx;
-         
+                         
          // Register File Write
          $rf_wr_en = ($rd == 5'b0) ? 1'b0 : $rd_valid;
          ?$rf_wr_en   
             $rf_wr_index[4:0] = $rd[4:0];
          $rf_wr_data[31:0] = $result[31:0];
+         
+         //branching
+         
+         $taken_br = $is_beq ? ($src1_value == $src2_value) :
+                     $is_bne ? ($src1_value != $src2_value) :
+                     $is_blt ? (($src1_value < $src2_value) ^ ($src1_value[31] != $src2_value[31])) :
+                     $is_bge ? (($src1_value >= $src2_value) ^ ($src1_value[31] != $src2_value[31])) :
+                     $is_bltu ? ($src1_value < $src2_value) :
+                     $is_bgeu ? ($src1_value >= $src2_value) : 1'b0;
+         $br_tgt_pc[31:0] = $pc + $imm;
       // Note: Because of the magic we are using for visualisation, if visualisation is enabled below,
       //       be sure to avoid having unassigned signals (which you might be using for random inputs)
       //       other than those specifically expected in the labs. You'll get strange errors for these.
          
    
    // Assert these to end simulation (before Makerchip cycle limit).
-   *passed = *cyc_cnt > 40;
+   *passed = *cyc_cnt > 100;
+   
    *failed = 1'b0;
    
    // Macro instantiations for:
