@@ -108,10 +108,16 @@
          
          $src1_value[31:0] = $rf_rd_data1[31:0];
          $src2_value[31:0] = $rf_rd_data2[31:0];
+         
+         // Register File Write
+         $rf_wr_en = ($rd == 5'b0) ? 1'b0 : $rd_valid;
+         ?$rf_wr_en   
+            $rf_wr_index[4:0] = $rd[4:0];
+         $rf_wr_data[31:0] = $result[31:0];
       // Note: Because of the magic we are using for visualisation, if visualisation is enabled below,
       //       be sure to avoid having unassigned signals (which you might be using for random inputs)
       //       other than those specifically expected in the labs. You'll get strange errors for these.
-
+         
    
    // Assert these to end simulation (before Makerchip cycle limit).
    *passed = *cyc_cnt > 40;
